@@ -1,5 +1,6 @@
 package;
 
+import haxe.ds.Vector;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Exception;
 import haxe.io.Bytes;
@@ -10,7 +11,23 @@ enum HashType {
 	Argon2id;
 }
 
+class Blake2b {
+	public static function getHash(msg:Bytes, key:Null<Bytes>, cbHashLen:Int):Bytes {
+		if (msg.length < 0 || msg.length > Math.pow(2, 128))
+			throw new Exception("Unhashable data: msg must be between 0 and 2^128 bytes");
+		var cbMessageLen = msg.length;
+		var cbKeyLen = key.length;
+		var h:Vector<Float> = new Vector(7).map((_) -> {return Math.random();});
+		return Bytes.ofString('');//HACK REMOVE THIS
+	}
+}
 class Argon2 {
+	private static function hash(message:Bytes, digestSize:Int):Bytes {
+		if (digestSize <= 64) {
+			return Blake2b.getHash(message, null, 64);
+		}
+		return Bytes.ofString('');//HACK REMOVE THIS
+	}
 	static function getHash(toHash:Bytes, salt:Bytes, parallelism:Int = 1, tagLength:Int, memSize:Int, iterations:Int, version:Int = 0x13, key:Null<Bytes>,
 			assocData:Null<Bytes>, hashType:HashType):Bytes {
 		if (toHash.length > 0xffffffff || toHash.length < 0x0)
@@ -42,6 +59,6 @@ class Argon2 {
 
         var argontype = ['i', 'd', 'id'][EnumValueTools.getIndex(hashType)];
 
-		return Bytes.ofHex('0'); // STOP YELLING AT ME HAXE LINTER JFC
+		return Bytes.ofHex('0');//HACK REMOVE THIS
 	}
 }
