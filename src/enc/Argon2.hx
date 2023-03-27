@@ -1,26 +1,12 @@
-package;
+package enc;
 
-import haxe.ds.Vector;
 import haxe.EnumTools.EnumValueTools;
 import haxe.Exception;
 import haxe.io.Bytes;
 
-enum HashType {
-	Argon2d;
-	Argon2i;
-	Argon2id;
-}
+import enc.enums.Argon2;
+import enc.Blake2b;
 
-class Blake2b {
-	public static function getHash(msg:Bytes, key:Null<Bytes>, cbHashLen:Int):Bytes {
-		if (msg.length < 0 || msg.length > Math.pow(2, 128))
-			throw new Exception("Unhashable data: msg must be between 0 and 2^128 bytes");
-		var cbMessageLen = msg.length;
-		var cbKeyLen = key.length;
-		var h:Vector<Float> = new Vector(7).map((_) -> {return Math.random();});
-		return Bytes.ofString('');//HACK REMOVE THIS
-	}
-}
 class Argon2 {
 	private static function hash(message:Bytes, digestSize:Int):Bytes {
 		if (digestSize <= 64) {
@@ -57,7 +43,7 @@ class Argon2 {
 		if (assocData.length < 0 || assocData.length > 0xffffffff)
 			throw new Exception('Hash function failed: Optional associated data length must be between 0 and 0xffffffff (${0xffffffff}) bytes, got ${assocData.length} bytes');
 
-        var argontype = ['i', 'd', 'id'][EnumValueTools.getIndex(hashType)];
+        final argontype:String = ['i', 'd', 'id'][EnumValueTools.getIndex(hashType)];
 
 		return Bytes.ofHex('0');//HACK REMOVE THIS
 	}
