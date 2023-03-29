@@ -1,14 +1,11 @@
 package;
-import haxe.io.Bytes;
-import enc.helpers.BigBits;
+
+import enc.helpers.Bits;
 
 class Main {
-    static function main() {
-        var a:BigBits = Math.round(Math.random()*512);
-        var b:BigBits = Math.round(Math.random()*512);
-        trace(a);
-        trace(b);
-        trace((a&b).dropLeading());
-        trace((a|b).dropLeading());
-    }
+	static function main() {
+		final a:Bits = 47;
+        final b:Bits = 16;
+        trace(a-b);
+	}
 }
