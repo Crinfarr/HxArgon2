@@ -28,7 +28,7 @@ abstract SuperBytes(Bytes) {
     
     @:to
     public function toIntArray():Array<Int> {
-        return [for (i in new SuperBytes(this)) i];
+        return [for (i in cast(this, SuperBytes)) i];
     }
     //inherent cast from
     @:from
@@ -38,13 +38,7 @@ abstract SuperBytes(Bytes) {
     
     @:from
     static inline function fromInt(b:Int):SuperBytes{
-        var ret:BytesBuffer = new BytesBuffer();
-        while (b > 255) {
-            ret.addByte(255);
-            b -= 255;
-        }
-        ret.addByte(b);
-        return ret.getBytes();
+        return StringTools.hex(b);
     }
 
     @:from
@@ -65,17 +59,41 @@ abstract SuperBytes(Bytes) {
     //base math functions
     //please don't make me do byte multiplication
     //I will kill myself
+    @:op(A+B)
+    function add(B:SuperBytes):SuperBytes {
+        final thisSB:SuperBytes = (cast (this, SuperBytes)).padToBytes(B.length);
+        final otherSB:SuperBytes = B.padToBytes(this.length);
+        
+        var vals:Array<Int> = [];
+        var carry:Int = 0;
+        for (idx in 0...thisSB.length) {
+            // trace(thisSB.length - idx - 1);
+            final index = thisSB.length - idx - 1;
+            final temp = thisSB[index] + otherSB[index] + carry;
+            if (temp > 255) {
+                carry = 1;
+                vals = [temp-255].concat(vals);
+            }
+            else {
+                carry = 0;
+                vals = [temp].concat(vals);
+            }
+        }
+        if (carry == 1) {
+            vals = [carry].concat(vals);
+        } 
+        return vals;
+    }
 
-
-    //array access functions (why do bytes not have these inherently?)
+    //array access functions
+    //(why do bytes not have these inherently?)
     @:op([])
     function arrAccess(idx:Int):Int {
         return this.get(idx);
     }
 
     @:op([])
-    function arrWrite(idx:Int, val:Int):SuperBytes {
+    function arrWrite(idx:Int, val:Int):Void {
         this.set(idx, val);
-        return this;
     }
 }
